@@ -1,0 +1,77 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_application_1/util/Dialog_Box.dart';
+import 'package:flutter_application_1/util/todo_tile.dart';
+
+class ToDoPage extends StatefulWidget {
+  const ToDoPage({super.key});
+
+  @override
+  State<ToDoPage> createState() => _ToDoPageState();
+}
+
+class _ToDoPageState extends State<ToDoPage> {
+  final TextEditingController _taskController = TextEditingController();
+
+  List toDoList = [
+    ["Make an app", false],
+    ["Test the app", false],
+  ];
+
+  void checkBoxChanged(bool? value, int index) {
+    setState(() {
+      toDoList[index][1] = value ?? false;
+    });
+  }
+
+  void saveNewTask() {
+    if (_taskController.text.isNotEmpty) {
+      setState(() {
+        toDoList.add([_taskController.text, false]);
+        _taskController.clear(); // Clear input after adding the task
+      });
+    }
+    Navigator.of(context).pop();
+  }
+
+  void createNewTask() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return DialogBox(
+          Cont: _taskController,
+          onSave: saveNewTask,
+          onCansel: () => Navigator.of(context).pop(),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.deepPurple.shade200,
+      appBar: AppBar(
+        backgroundColor: Colors.deepPurple.shade400,
+        elevation: 0,
+        title: const Text(
+          'TO DO APP',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: createNewTask,
+        child: const Icon(Icons.add),
+      ),
+      body: ListView.builder(
+        itemCount: toDoList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ToDoUtil(
+            TasekName: toDoList[index][0],
+            taskComplate: toDoList[index][1],
+            onChanged: (value) => checkBoxChanged(value, index),
+          );
+        },
+      ),
+    );
+  }
+}
